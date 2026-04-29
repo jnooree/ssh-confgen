@@ -12,7 +12,7 @@ const baseSettings = userSettingsSchema.parse({
 	localIpMode: 'private',
 	localIp: '203.0.113.10',
 	enableX11: false,
-	xAuthLocation: '/usr/bin/xauth'
+	xAuthLocation: '/usr/bin/xauth',
 });
 
 describe('remote profile parsing', () => {
@@ -85,7 +85,7 @@ describe('SSH config generation', () => {
 		const artifacts = generateArtifacts(parsed.profile, {
 			...baseSettings,
 			localIpMode: 'public',
-			localIp: '198.51.100.42'
+			localIp: '198.51.100.42',
 		});
 
 		expect(artifacts.usesReverseSocket).toBe(false);

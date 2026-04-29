@@ -4,6 +4,6 @@ export { sampleProfileYaml } from './sampleProfile';
 export {
 	formatSocketPath,
 	generateArtifacts,
-	userSettingsSchema
+	userSettingsSchema,
 } from './sshConfig';
 export type { GeneratedArtifacts, UserSettings } from './sshConfig';

@@ -10,14 +10,14 @@
 		Select,
 		TabItem,
 		Tabs,
-		Textarea
+		Textarea,
 	} from 'flowbite-svelte';
 	import {
 		AlertTriangle,
 		CheckCircle2,
 		FileText,
 		RefreshCw,
-		Upload
+		Upload,
 	} from 'lucide-svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 	import OutputHeader from '$lib/components/OutputHeader.svelte';
@@ -25,7 +25,7 @@
 		generateArtifacts,
 		parseRemoteProfileText,
 		sampleProfileYaml,
-		userSettingsSchema
+		userSettingsSchema,
 	} from '$lib';
 	import type { GeneratedArtifacts } from '$lib';
 
@@ -43,11 +43,11 @@
 
 	const localOsOptions = [
 		{ value: 'linux', name: 'Linux' },
-		{ value: 'macos', name: 'macOS' }
+		{ value: 'macos', name: 'macOS' },
 	];
 	const localIpModeOptions = [
 		{ value: 'private', name: 'Private or firewalled' },
-		{ value: 'public', name: 'Directly reachable' }
+		{ value: 'public', name: 'Directly reachable' },
 	];
 
 	const profileResult = $derived(parseRemoteProfileText(profileText));
@@ -61,7 +61,7 @@
 			localIpMode,
 			localIp,
 			enableX11,
-			xAuthLocation
+			xAuthLocation,
 		})
 	);
 	const artifacts = $derived<GeneratedArtifacts | null>(
@@ -187,7 +187,7 @@
 							rows={15}
 							class="w-full font-mono text-sm"
 							classes={{
-								inner: 'bg-slate-950 text-slate-50 placeholder:text-slate-400'
+								inner: 'bg-slate-950 text-slate-50 placeholder:text-slate-400',
 							}}
 							bind:value={profileText}
 							spellcheck="false"

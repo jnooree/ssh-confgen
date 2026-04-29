@@ -2,7 +2,7 @@
 	let {
 		text,
 		testId,
-		flush = false
+		flush = false,
 	}: {
 		text: string;
 		testId?: string;

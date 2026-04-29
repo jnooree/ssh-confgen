@@ -32,7 +32,7 @@ export const userSettingsSchema = z.object({
 	localIpMode: z.enum(['private', 'public']),
 	localIp: ipv4Schema,
 	enableX11: z.boolean(),
-	xAuthLocation: z.string().trim().min(1)
+	xAuthLocation: z.string().trim().min(1),
 });
 
 export type UserSettings = z.infer<typeof userSettingsSchema>;
@@ -64,7 +64,7 @@ export function generateArtifacts(
 	const remoteProxySocketPath = usesReverseSocket
 		? formatSocketPath(profile, settings, {
 				remoteUser: settings.remoteUser,
-				localUser: '%r'
+				localUser: '%r',
 			})
 		: null;
 	const localConfig = generateLocalConfig(
@@ -95,7 +95,7 @@ export function generateArtifacts(
 		warnings: generateWarnings(profile, settings, usesReverseSocket),
 		usesReverseSocket,
 		localForwardSocketPath,
-		remoteProxySocketPath
+		remoteProxySocketPath,
 	};
 }
 
@@ -108,7 +108,7 @@ export function formatSocketPath(
 		remoteUser: identity.remoteUser,
 		localUser: identity.localUser,
 		reverseHost: settings.reverseHost,
-		localSshPort: String(settings.localSshPort)
+		localSshPort: String(settings.localSshPort),
 	});
 
 	if (rendered.startsWith('/')) {
@@ -130,7 +130,9 @@ function generateLocalConfig(
 			`    HostName ${host.hostName}`,
 			`    Port ${host.port}`,
 			`    User ${settings.remoteUser}`,
-			...(host.alias === profile.proxyHostAlias ? ['    ControlPath none'] : [])
+			...(host.alias === profile.proxyHostAlias
+				? ['    ControlPath none']
+				: []),
 		].join('\n')
 	);
 
@@ -144,14 +146,14 @@ function generateLocalConfig(
 			: []),
 		...(usesReverseSocket && localForwardSocketPath
 			? [
-					`    RemoteForward ${localForwardSocketPath} localhost:${settings.localSshPort}`
+					`    RemoteForward ${localForwardSocketPath} localhost:${settings.localSshPort}`,
 				]
-			: [])
+			: []),
 	].join('\n');
 
 	const proxyJumpBlock = [
 		`Host !${profile.defaultLoginAlias} ${patterns}`,
-		`    ProxyJump ${profile.proxyHostAlias}`
+		`    ProxyJump ${profile.proxyHostAlias}`,
 	].join('\n');
 
 	const globalBlock = [
@@ -163,9 +165,9 @@ function generateLocalConfig(
 			? [
 					'    ForwardX11Trusted no',
 					'    ForwardX11Timeout 0',
-					`    XAuthLocation ${settings.xAuthLocation}`
+					`    XAuthLocation ${settings.xAuthLocation}`,
 				]
-			: [])
+			: []),
 	].join('\n');
 
 	return (
@@ -183,7 +185,7 @@ function generateRemoteConfig(
 	const base = [
 		`Host ${settings.reverseHost}`,
 		`    User ${settings.localUser}`,
-		'    ControlMaster auto'
+		'    ControlMaster auto',
 	];
 
 	if (usesReverseSocket && remoteProxySocketPath) {
@@ -193,7 +195,7 @@ function generateRemoteConfig(
 				'    HostName localhost',
 				`    HostKeyAlias ${settings.reverseHost}`,
 				'    CheckHostIP no',
-				`    ProxyCommand socat UNIX:${remoteProxySocketPath} -`
+				`    ProxyCommand socat UNIX:${remoteProxySocketPath} -`,
 			].join('\n') + '\n'
 		);
 	}
@@ -202,7 +204,7 @@ function generateRemoteConfig(
 		[
 			...base,
 			`    HostName ${settings.localIp}`,
-			`    Port ${settings.localSshPort}`
+			`    Port ${settings.localSshPort}`,
 		].join('\n') + '\n'
 	);
 }
@@ -214,7 +216,7 @@ function generateRemoteRootConfig(): string {
 			'',
 			'Host *',
 			`    ControlPath ${controlPath}`,
-			'    ControlPersist 1h'
+			'    ControlPersist 1h',
 		].join('\n') + '\n'
 	);
 }
@@ -230,7 +232,7 @@ function generateLocalSetup(
 			: [
 					'sudo apt update',
 					'sudo apt install -y openssh-server',
-					'sudo systemctl enable --now ssh || sudo service ssh restart'
+					'sudo systemctl enable --now ssh || sudo service ssh restart',
 				].join('\n');
 
 	return (
@@ -243,7 +245,7 @@ function generateLocalSetup(
 			sshdCommands,
 			"cat >> ~/.ssh/config <<'SSHCONF'",
 			localConfig.trimEnd(),
-			'SSHCONF'
+			'SSHCONF',
 		].join('\n') + '\n'
 	);
 }
@@ -271,7 +273,7 @@ function generateRemoteSetup(
 			'SSHCONF',
 			`cat > ~/.ssh/config.d/${shellQuote(`${settings.reverseHost}.conf`)} <<'SSHCONF'`,
 			remoteConfig.trimEnd(),
-			'SSHCONF'
+			'SSHCONF',
 		].join('\n') + '\n'
 	);
 }
@@ -282,7 +284,7 @@ function generateWarnings(
 	usesReverseSocket: boolean
 ): string[] {
 	const warnings = [
-		'This static page only generates files and commands; it cannot edit SSH config, copy keys, enable sshd, or verify remote packages.'
+		'This static page only generates files and commands; it cannot edit SSH config, copy keys, enable sshd, or verify remote packages.',
 	];
 
 	if (

@@ -27,7 +27,7 @@ export const remoteProfileSchema = z
 				z.object({
 					alias: aliasSchema,
 					hostName: hostNameSchema,
-					port: portSchema.default(22)
+					port: portSchema.default(22),
 				})
 			)
 			.min(1, 'Add at least one login or proxy host'),
@@ -44,23 +44,23 @@ export const remoteProfileSchema = z
 				.min(1, 'Enter a remote socket filename template')
 				.default(
 					'ssh-{remoteUser}-{localUser}@{reverseHost}_{localSshPort}.sock'
-				)
+				),
 		}),
 		remote: z.object({
 			platform: z.literal('linux'),
 			requires: z
 				.array(z.string().trim().min(1))
-				.default(['socat', 'openssh-client'])
+				.default(['socat', 'openssh-client']),
 		}),
 		features: z
 			.object({
 				x11Forwarding: z.boolean().default(false),
-				reverseSshViaUnixSocket: z.boolean().default(true)
+				reverseSshViaUnixSocket: z.boolean().default(true),
 			})
 			.default({
 				x11Forwarding: false,
-				reverseSshViaUnixSocket: true
-			})
+				reverseSshViaUnixSocket: true,
+			}),
 	})
 	.superRefine((profile, context) => {
 		const aliases = new Set(profile.entryHosts.map((host) => host.alias));
@@ -69,7 +69,7 @@ export const remoteProfileSchema = z
 			context.addIssue({
 				code: 'custom',
 				path: ['proxyHostAlias'],
-				message: 'proxyHostAlias must match one of the entryHosts aliases'
+				message: 'proxyHostAlias must match one of the entryHosts aliases',
 			});
 		}
 
@@ -77,7 +77,7 @@ export const remoteProfileSchema = z
 			context.addIssue({
 				code: 'custom',
 				path: ['defaultLoginAlias'],
-				message: 'defaultLoginAlias must match one of the entryHosts aliases'
+				message: 'defaultLoginAlias must match one of the entryHosts aliases',
 			});
 		}
 	});
@@ -103,14 +103,14 @@ export function parseRemoteProfileText(source: string): ProfileParseResult {
 
 		return {
 			ok: false,
-			errors: parsed.error.issues.map(formatIssue)
+			errors: parsed.error.issues.map(formatIssue),
 		};
 	} catch (error) {
 		return {
 			ok: false,
 			errors: [
-				`Could not parse profile: ${error instanceof Error ? error.message : String(error)}`
-			]
+				`Could not parse profile: ${error instanceof Error ? error.message : String(error)}`,
+			],
 		};
 	}
 }

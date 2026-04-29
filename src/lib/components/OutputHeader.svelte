@@ -9,7 +9,7 @@
 		text,
 		copied,
 		copyText,
-		downloadText
+		downloadText,
 	}: {
 		title: string;
 		fileName: string;

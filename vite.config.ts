@@ -6,7 +6,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	optimizeDeps: {
-		include: ['flowbite', 'flowbite-svelte', 'lucide-svelte', 'yaml', 'zod']
+		include: ['flowbite', 'flowbite-svelte', 'lucide-svelte', 'yaml', 'zod'],
 	},
 	test: {
 		expect: { requireAssertions: true },
@@ -18,11 +18,11 @@ export default defineConfig({
 					browser: {
 						enabled: true,
 						provider: playwright(),
-						instances: [{ browser: 'chromium', headless: true }]
+						instances: [{ browser: 'chromium', headless: true }],
 					},
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**']
-				}
+					exclude: ['src/lib/server/**'],
+				},
 			},
 
 			{
@@ -31,9 +31,9 @@ export default defineConfig({
 					name: 'server',
 					environment: 'node',
 					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
-	}
+					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+				},
+			},
+		],
+	},
 });
