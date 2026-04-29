@@ -11,6 +11,13 @@
 			"options": {
 				"parser": "svelte"
 			}
+		},
+		{
+			"files": ".vscode/*.json",
+			"options": {
+				"parser": "jsonc",
+				"trailingComma": "all"
+			}
 		}
 	],
 	"tailwindStylesheet": "./src/routes/layout.css"
