@@ -5,6 +5,9 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+	optimizeDeps: {
+		include: ['flowbite', 'flowbite-svelte', 'lucide-svelte', 'yaml', 'zod']
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

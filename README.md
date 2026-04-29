@@ -1,42 +1,69 @@
-# sv
+# SSH Config Generator
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A static SvelteKit app for generating SSH config snippets for Linux HPC reverse SSH workflows. Cluster-specific values live in user-provided remote profiles, not in the app code.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-bunx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-bunx sv@0.15.1 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:static" --install bun ./
-```
+The UI is built with SvelteKit, Tailwind CSS, Flowbite Svelte, and Lucide icons.
 
 ## Developing
 
-Once you've created a project and installed dependencies with `bun install`, start a development server:
+Install dependencies and start the local server:
 
 ```sh
+bun install
 bun run dev
+```
 
-# or start the server and open the app in a new browser tab
-bun run dev -- --open
+## Validating
+
+```sh
+bun run check
+bun run lint
+bun run test
+bun run build
+```
+
+## Remote Profiles
+
+Remote profiles can be YAML or JSON. A minimal YAML profile looks like:
+
+```yaml
+profileVersion: 1
+displayName: Example HPC Profile
+entryHosts:
+  - alias: hpc-proxy
+    hostName: proxy.example.edu
+    port: 2222
+  - alias: hpc-login
+    hostName: login.example.edu
+    port: 22
+proxyHostAlias: hpc-proxy
+defaultLoginAlias: hpc-login
+remoteHostPatterns:
+  - login*
+  - compute*
+socket:
+  directory: /shared/sockets
+  template: ssh-{remoteUser}-{localUser}@{reverseHost}_{localSshPort}.sock
+remote:
+  platform: linux
+  requires:
+    - socat
+    - openssh-client
+features:
+  x11Forwarding: true
+  reverseSshViaUnixSocket: true
 ```
 
 ## Building
 
-To create a production version of your app:
+Create a static production build:
 
 ```sh
 bun run build
 ```
 
-You can preview the production build with `bun run preview`.
+Set `BASE_PATH` for GitHub Pages project sites:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```sh
+BASE_PATH=/ssh-confgen bun run build
+```
