@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { Button } from 'flowbite-svelte';
-	import { CheckCircle2, Clipboard, Download } from 'lucide-svelte';
+	import {
+		CheckCircleSolid,
+		ClipboardOutline,
+		DownloadOutline,
+	} from 'flowbite-svelte-icons';
 
 	let {
 		title,
@@ -34,9 +38,9 @@
 			onclick={() => copyText(label, text)}
 		>
 			{#if copied === label}
-				<CheckCircle2 size={17} aria-hidden="true" />
+				<CheckCircleSolid width={17} height={17} aria-hidden="true" />
 			{:else}
-				<Clipboard size={17} aria-hidden="true" />
+				<ClipboardOutline width={17} height={17} aria-hidden="true" />
 			{/if}
 		</Button>
 		<Button
@@ -48,7 +52,7 @@
 			title={`Download ${label}`}
 			onclick={() => downloadText(fileName, text)}
 		>
-			<Download size={17} aria-hidden="true" />
+			<DownloadOutline width={17} height={17} aria-hidden="true" />
 		</Button>
 	</div>
 </div>

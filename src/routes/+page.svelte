@@ -13,12 +13,12 @@
 		Textarea,
 	} from 'flowbite-svelte';
 	import {
-		AlertTriangle,
-		CheckCircle2,
-		FileText,
-		RefreshCw,
-		Upload,
-	} from 'lucide-svelte';
+		CheckCircleSolid,
+		ExclamationCircleSolid,
+		FileCodeOutline,
+		RefreshOutline,
+		UploadOutline,
+	} from 'flowbite-svelte-icons';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 	import OutputHeader from '$lib/components/OutputHeader.svelte';
 	import {
@@ -127,7 +127,7 @@
 				<div
 					class="grid size-10 place-items-center rounded-md bg-primary-700 text-white"
 				>
-					<FileText size={22} aria-hidden="true" />
+					<FileCodeOutline width={22} height={22} aria-hidden="true" />
 				</div>
 				<div>
 					<h1 class="text-2xl font-semibold tracking-normal text-slate-950">
@@ -154,7 +154,7 @@
 						size="sm"
 						onclick={restoreSampleProfile}
 					>
-						<RefreshCw class="me-2" size={16} aria-hidden="true" />
+						<RefreshOutline class="me-2 size-4" aria-hidden="true" />
 						Sample
 					</Button>
 				</div>
@@ -165,9 +165,10 @@
 							Upload YAML or JSON
 						</Label>
 						<div class="flex items-center gap-2">
-							<Upload
+							<UploadOutline
 								class="shrink-0 text-slate-500"
-								size={18}
+								width={18}
+								height={18}
 								aria-hidden="true"
 							/>
 							<Fileupload
@@ -197,7 +198,7 @@
 					{#if profileResult.ok}
 						<Alert color="green" class="items-center">
 							{#snippet icon()}
-								<CheckCircle2 class="size-5" aria-hidden="true" />
+								<CheckCircleSolid class="size-5" aria-hidden="true" />
 							{/snippet}
 							<span class="font-medium"
 								>{profileResult.profile.displayName}</span
@@ -206,7 +207,7 @@
 					{:else}
 						<Alert color="red" aria-label="Profile errors">
 							{#snippet icon()}
-								<AlertTriangle class="size-5" aria-hidden="true" />
+								<ExclamationCircleSolid class="size-5" aria-hidden="true" />
 							{/snippet}
 							<ul class="space-y-1">
 								{#each profileResult.errors as error (error)}
@@ -274,7 +275,7 @@
 				{#if settingErrors.length > 0}
 					<Alert color="red" class="mt-4" aria-label="Input errors">
 						{#snippet icon()}
-							<AlertTriangle class="size-5" aria-hidden="true" />
+							<ExclamationCircleSolid class="size-5" aria-hidden="true" />
 						{/snippet}
 						<ul class="space-y-1">
 							{#each settingErrors as error (error)}
@@ -290,7 +291,7 @@
 			{#if artifacts}
 				<Alert color="yellow" aria-label="Warnings">
 					{#snippet icon()}
-						<AlertTriangle class="size-5" aria-hidden="true" />
+						<ExclamationCircleSolid class="size-5" aria-hidden="true" />
 					{/snippet}
 					<ul class="space-y-2">
 						{#each artifacts.warnings as warning (warning)}
@@ -384,7 +385,7 @@
 			{:else}
 				<Alert color="blue">
 					{#snippet icon()}
-						<AlertTriangle class="size-5" aria-hidden="true" />
+						<ExclamationCircleSolid class="size-5" aria-hidden="true" />
 					{/snippet}
 					<span class="font-medium">
 						Generated output is waiting for valid profile and user inputs.
