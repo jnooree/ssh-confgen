@@ -1,4 +1,4 @@
-import { parse as parseYaml } from 'yaml';
+import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { z } from 'zod';
 
 const aliasSchema = z
@@ -113,6 +113,39 @@ export function parseRemoteProfileText(source: string): ProfileParseResult {
 			],
 		};
 	}
+}
+
+export function serializeRemoteProfileYaml(profile: RemoteProfile): string {
+	const normalized = remoteProfileSchema.parse(profile);
+	return stringifyYaml(
+		{
+			profileVersion: normalized.profileVersion,
+			displayName: normalized.displayName,
+			entryHosts: normalized.entryHosts.map((host) => ({
+				alias: host.alias,
+				hostName: host.hostName,
+				port: host.port,
+			})),
+			proxyHostAlias: normalized.proxyHostAlias,
+			defaultLoginAlias: normalized.defaultLoginAlias,
+			remoteHostPatterns: normalized.remoteHostPatterns,
+			socket: {
+				directory: normalized.socket.directory,
+				template: normalized.socket.template,
+			},
+			remote: {
+				platform: normalized.remote.platform,
+				requires: normalized.remote.requires,
+			},
+			features: {
+				x11Forwarding: normalized.features.x11Forwarding,
+				reverseSshViaUnixSocket: normalized.features.reverseSshViaUnixSocket,
+			},
+		},
+		{
+			lineWidth: 0,
+		}
+	);
 }
 
 function formatIssue(issue: z.core.$ZodIssue): string {

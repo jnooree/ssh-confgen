@@ -1,4 +1,8 @@
-export { parseRemoteProfileText, remoteProfileSchema } from './profile';
+export {
+	parseRemoteProfileText,
+	remoteProfileSchema,
+	serializeRemoteProfileYaml,
+} from './profile';
 export type { ProfileParseResult, RemoteProfile } from './profile';
 export { sampleProfileYaml } from './sampleProfile';
 export {

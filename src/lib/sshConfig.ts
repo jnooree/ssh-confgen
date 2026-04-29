@@ -39,10 +39,19 @@ export type UserSettings = z.infer<typeof userSettingsSchema>;
 
 export interface GeneratedArtifacts {
 	localConfig: string;
+	localRootConfig: string;
+	localProfileConfig: string;
 	remoteConfig: string;
 	remoteRootConfig: string;
 	localSetup: string;
 	remoteSetup: string;
+	fileNames: {
+		localRootConfig: string;
+		localProfileConfig: string;
+		remoteConfig: string;
+		remoteRootConfig: string;
+		setupCommands: string;
+	};
 	warnings: string[];
 	usesReverseSocket: boolean;
 	localForwardSocketPath: string | null;
@@ -67,7 +76,8 @@ export function generateArtifacts(
 				localUser: '%r',
 			})
 		: null;
-	const localConfig = generateLocalConfig(
+	const localRootConfig = generateLocalRootConfig();
+	const localProfileConfig = generateLocalProfileConfig(
 		profile,
 		settings,
 		usesReverseSocket,
@@ -80,18 +90,34 @@ export function generateArtifacts(
 		remoteProxySocketPath
 	);
 	const remoteRootConfig = generateRemoteRootConfig();
+	const fileNames = {
+		localRootConfig: 'local-ssh-config',
+		localProfileConfig: `${profile.defaultLoginAlias}-${settings.reverseHost}.conf`,
+		remoteConfig: `${settings.reverseHost}.conf`,
+		remoteRootConfig: 'remote-ssh-config',
+		setupCommands: 'setup-commands.sh',
+	};
 
 	return {
-		localConfig,
+		localConfig: `${localRootConfig}\n${localProfileConfig}`,
+		localRootConfig,
+		localProfileConfig,
 		remoteConfig,
 		remoteRootConfig,
-		localSetup: generateLocalSetup(profile, settings, localConfig),
-		remoteSetup: generateRemoteSetup(
+		localSetup: generateLocalSetup(
 			profile,
 			settings,
-			remoteConfig,
-			remoteRootConfig
+			localRootConfig,
+			localProfileConfig,
+			fileNames.localProfileConfig
 		),
+		remoteSetup: generateRemoteSetup(
+			profile,
+			remoteConfig,
+			remoteRootConfig,
+			fileNames.remoteConfig
+		),
+		fileNames,
 		warnings: generateWarnings(profile, settings, usesReverseSocket),
 		usesReverseSocket,
 		localForwardSocketPath,
@@ -118,7 +144,7 @@ export function formatSocketPath(
 	return `${profile.socket.directory.replace(/\/+$/, '')}/${rendered}`;
 }
 
-function generateLocalConfig(
+function generateLocalProfileConfig(
 	profile: RemoteProfile,
 	settings: UserSettings,
 	usesReverseSocket: boolean,
@@ -158,8 +184,6 @@ function generateLocalConfig(
 
 	const globalBlock = [
 		'Host *',
-		`    ControlPath ${controlPath}`,
-		'    ControlPersist 10m',
 		`    SetEnv LC_HOSTNAME=${settings.reverseHost}`,
 		...(settings.enableX11 && profile.features.x11Forwarding
 			? [
@@ -173,6 +197,18 @@ function generateLocalConfig(
 	return (
 		[...hostBlocks, patternBlock, proxyJumpBlock, globalBlock].join('\n\n') +
 		'\n'
+	);
+}
+
+function generateLocalRootConfig(): string {
+	return (
+		[
+			'Include config.d/*.conf',
+			'',
+			'Host *',
+			`    ControlPath ${controlPath}`,
+			'    ControlPersist 10m',
+		].join('\n') + '\n'
 	);
 }
 
@@ -224,7 +260,9 @@ function generateRemoteRootConfig(): string {
 function generateLocalSetup(
 	profile: RemoteProfile,
 	settings: UserSettings,
-	localConfig: string
+	localRootConfig: string,
+	localProfileConfig: string,
+	localProfileFileName: string
 ): string {
 	const sshdCommands =
 		settings.localOs === 'macos'
@@ -237,14 +275,17 @@ function generateLocalSetup(
 
 	return (
 		[
-			'# Review the generated SSH config before appending it.',
-			'mkdir -p ~/.ssh',
+			'# Review the generated SSH config before writing it.',
+			'mkdir -p ~/.ssh/config.d',
 			'chmod 700 ~/.ssh',
 			'test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519',
 			`ssh-copy-id ${shellQuote(profile.defaultLoginAlias)}`,
 			sshdCommands,
-			"cat >> ~/.ssh/config <<'SSHCONF'",
-			localConfig.trimEnd(),
+			'grep -qxF "Include config.d/*.conf" ~/.ssh/config 2>/dev/null || cat > ~/.ssh/config <<\'SSHCONF\'',
+			localRootConfig.trimEnd(),
+			'SSHCONF',
+			`cat > ~/.ssh/config.d/${shellQuote(localProfileFileName)} <<'SSHCONF'`,
+			localProfileConfig.trimEnd(),
 			'SSHCONF',
 		].join('\n') + '\n'
 	);
@@ -252,9 +293,9 @@ function generateLocalSetup(
 
 function generateRemoteSetup(
 	profile: RemoteProfile,
-	settings: UserSettings,
 	remoteConfig: string,
-	remoteRootConfig: string
+	remoteRootConfig: string,
+	remoteProfileFileName: string
 ): string {
 	const requiredChecks = profile.remote.requires
 		.map(
@@ -271,7 +312,7 @@ function generateRemoteSetup(
 			'grep -qxF "Include config.d/*.conf" ~/.ssh/config 2>/dev/null || cat > ~/.ssh/config <<\'SSHCONF\'',
 			remoteRootConfig.trimEnd(),
 			'SSHCONF',
-			`cat > ~/.ssh/config.d/${shellQuote(`${settings.reverseHost}.conf`)} <<'SSHCONF'`,
+			`cat > ~/.ssh/config.d/${shellQuote(remoteProfileFileName)} <<'SSHCONF'`,
 			remoteConfig.trimEnd(),
 			'SSHCONF',
 		].join('\n') + '\n'

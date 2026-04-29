@@ -23,6 +23,7 @@
 
 @layer base {
 	html {
+		color-scheme: light;
 		background: #f8fafc;
 		color: #172033;
 		font-family:
@@ -33,6 +34,12 @@
 			BlinkMacSystemFont,
 			'Segoe UI',
 			sans-serif;
+	}
+
+	html.dark {
+		color-scheme: dark;
+		background: #020617;
+		color: #e2e8f0;
 	}
 
 	body {

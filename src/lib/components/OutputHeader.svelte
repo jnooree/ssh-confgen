@@ -26,7 +26,9 @@
 </script>
 
 <div class="flex min-h-14 items-center justify-between gap-3">
-	<h2 class="text-base font-semibold text-slate-950">{title}</h2>
+	<h2 class="text-base font-semibold text-slate-950 dark:text-white">
+		{title}
+	</h2>
 	<div class="flex shrink-0 items-center gap-2">
 		<Button
 			type="button"
